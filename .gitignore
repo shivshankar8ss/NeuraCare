@@ -1,0 +1,22 @@
+uv.lock
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+.venv/
+
+# Secrets
+backend/config.py
+.env
+
+# Streamlit
+.streamlit/
+
+# Logs
+*.log
+
+# OS / Editor
+.DS_Store
+.vscode/
