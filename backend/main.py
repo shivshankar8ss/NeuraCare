@@ -46,6 +46,37 @@ def _twiml_message(body: str) -> PlainTextResponse:
     )
 
 # endpoints for whatsapp
+# @app.post("/whatsapp_ask")
+# async def whatsapp_ask(Body: str = Form(...)):
+#     user_text = Body.strip() if Body else ""
+
+#     inputs = {
+#         "messages": [
+#             ("system", SYSTEM_PROMPT),
+#             ("user", user_text),
+#         ]
+#     }
+#     stream = graph.stream(inputs, stream_mode="updates")
+#     tool_called_name, final_response = parse_response(stream)
+
+#     if not final_response:
+#         final_response = (
+#             "I'm here with you, but I couldn't generate a response just now."
+#         )
+#     return _twiml_message(final_response)
+
+# if __name__ == "__main__":
+#     import uvicorn
+
+#     uvicorn.run(
+#         "backend.main:app",
+#         host="0.0.0.0",
+#         port=8000,
+#         reload=True,
+#     )
+
+MAX_WHATSAPP_CHARS = 1550
+
 @app.post("/whatsapp_ask")
 async def whatsapp_ask(Body: str = Form(...)):
     user_text = Body.strip() if Body else ""
@@ -56,6 +87,7 @@ async def whatsapp_ask(Body: str = Form(...)):
             ("user", user_text),
         ]
     }
+
     stream = graph.stream(inputs, stream_mode="updates")
     tool_called_name, final_response = parse_response(stream)
 
@@ -63,14 +95,8 @@ async def whatsapp_ask(Body: str = Form(...)):
         final_response = (
             "I'm here with you, but I couldn't generate a response just now."
         )
+
+    if len(final_response) > MAX_WHATSAPP_CHARS:
+        final_response = final_response[:MAX_WHATSAPP_CHARS - 3] + "..."
+
     return _twiml_message(final_response)
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(
-        "backend.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-    )
